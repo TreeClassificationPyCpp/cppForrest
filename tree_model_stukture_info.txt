@@ -1,0 +1,40 @@
+Beschreibung für den aufbau einer Tree-Model-Datei, die mit der DecisionTreeLib verwendet werden kann.
+
+die Klasssifikatoren können mit der funktion writeLayer(nodeList, classList, features, border, children_left, children_right, samplesInLeaf, file)
+in der python Datei trainClassifier.py im dysphagie svn exportiert werden.
+
+1. in der ersten Zeile steht die Anzahl der verwendeten Bäume
+   Anzahl = 1 -> einfacher DecisionTree
+   Anzahl > 1 -> RandomForrestClassifier
+
+2. eine Leerzeile nach der Anzahl der Bäume sowie nach jedem Baum
+
+3. es folgen die Knoten des Baumes.
+   a) ein Knoten besteht aus der Nummer des Features(entspricht der nummer des Festures im Vector aus der Feature Berechnung)
+   und der Entscheidungsschwelle für das Feature in diesem Knoten
+   FeatureIndex und Schwelle sind durch Leerzeichen Getrennt
+   
+   b) die Knoten eines Layers sind immer in einer Zeile durch Leerzeichen getrennt
+      wenn ein Knoten ein Blatt ist enthält er keine Entscheidungsschwelle sondern die Wahrscheinlichkeit das ein Sample dieses Blatt verlässt
+      dabei wird die Wahrscheinlichkeit für die Entscheidung True mit einem Positiven und die Wharscheinlichkeit für die Entscheidung False negativ angegeben
+      bei einem einfachen DcissionTree spielen die Wahrscheinlichkeiten keine Rolle, hier müssen nur die Vorzeichen stimmen
+   
+   c) wenn ein Knoten ein Blatt war folgen danach nur noch Na Na knoten, das ist für die zu ordnung bei unvollständigen bäumen wichtig
+      daher ist jeder Layer des Baumes vollständig
+      
+      z.B.: 1 Zeile == 1 Knoten
+	    2 Zeile == 2 Knoten
+	    3 Zeile == 4 Knoten
+	    4 Zeile == 8 Knoten usw. 
+
+4. nach dem letzten Baum muss auch eine Leerzeile eingefügt sein
+
+Beispiel Baumstrucktur:
+
+1
+
+2 0.0050303475 
+0 0.0099894348532 0 0.00969805754721 
+4 0.00829236302525 1 0.0799177661538 5 0.0121393119916 4 0.0106864087284 
+-2 -5.0 -2 352.0 -2 -122.0 -2 373.0 -2 197.0 -2 26.0 -2 126.0 -2 -828.0 
+NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA 
