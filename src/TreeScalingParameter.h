@@ -3,25 +3,24 @@
 #ifndef TREESCALINGPARAMETER_H
 #define TREESCALINGPARAMETER_H
 
-#include <QObject>
-#include <QVector>
 
+#include <vector>
+#include <string>
 
-class TreeScalingParameter : public QObject
+class TreeScalingParameter 
 {
-    Q_OBJECT
 
 public:
-    TreeScalingParameter(QObject* parent);
+    TreeScalingParameter();
     ~TreeScalingParameter();
 
-    bool setIniFile(const QString& filePathAndName);
-    bool scaleFeatures(QVector<double>& features);
+    bool setIniFile(const std::string& filePathAndName);
+    bool scaleFeatures(std::vector<double>& features);
 
 private:
-    QVector<float> m_range;
-    QVector<float> m_max;
-    QVector<float> m_min;
+    std::vector<float> m_range;
+    std::vector<float> m_max;
+    std::vector<float> m_min;
 };
 
 #endif // TREESCALINGPARAMETER_H

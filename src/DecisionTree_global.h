@@ -1,16 +1,11 @@
 #ifndef DECISIONTREE_GLOBAL_H
 #define DECISIONTREE_GLOBAL_H
 
-#include <QtCore/qglobal.h>
 
-#ifdef DECISIONTREE_LIB
-# define DECISIONTREE_EXPORT Q_DECL_EXPORT
-#else
-# define DECISIONTREE_EXPORT Q_DECL_IMPORT
-#endif
 
 #define EMG_FEATURES
-
+#include <utility>
+#include <map>
 #ifdef EMG_FEATURES
 enum decisionTreeFeatures
 {
@@ -85,7 +80,7 @@ enum decisionTreeFeatures
 };
 #endif
 
-typedef QPair<decisionTreeFeatures, float> feature;
+typedef std::pair<decisionTreeFeatures, float> feature;
 
 
 #endif // DECISIONTREE_GLOBAL_H

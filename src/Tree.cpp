@@ -1,14 +1,19 @@
 #include "Tree.h"
-#include "UtilityFunctions.h"
+//#include "UtilityFunctions.h"
 #include "Node.h"
-#include <QDebug>
-#include <QTextStream>
+
+#include <string>
+#include <iostream>
+#include <fstream>
+
+#include <algorithm> 
+#include <functional> 
+#include <cctype>
+#include <locale>
 
 
-
-Tree::Tree(QObject* parent)
-    : QObject(parent)
-    , m_root(nullptr)
+Tree::Tree()
+    : m_root(nullptr)
     , m_numberOfNodes(0)
     , m_nodesAdded(0)
     , m_useProps(true)
@@ -21,7 +26,7 @@ Tree::~Tree()
 
 }
 
-bool Tree::builtTree(QList<QList<feature>> borders)
+bool Tree::builtTree(std::vector<std::vector<feature> > borders)
 {
     if (borders.size() == 0)
         return false;
@@ -37,7 +42,7 @@ bool Tree::builtTree(QList<QList<feature>> borders)
     m_nodesAdded = 0;
 
     // create node, set feature and position
-    m_root = new Node(nullptr, this);
+    m_root = new Node(nullptr);
     m_root->setBorder(borders[0][0]);
     m_root->m_branch = 0;
     m_root->m_layer = 0;
@@ -54,7 +59,7 @@ bool Tree::builtTree(QList<QList<feature>> borders)
     return true;
 }
 
-float Tree::decide(QVector< double> features, int* layer, int* branch)
+float Tree::decide(std::vector< double> features, int* layer, int* branch)
 {
     if (m_root == nullptr)
         return -1;
@@ -80,7 +85,7 @@ void Tree::addChild(Node* parent, int layer, int branch)
 
     //qDebug() << "layer: " << layer << "branch: " << branch;
 
-    Node* child = new Node(parent, parent);
+    Node* child = new Node(parent);
 
     child->m_branch = branch;
     child->m_layer = layer;
@@ -136,7 +141,7 @@ void Tree::countNodes()
 
     for (int l = 0; l < m_borders.size(); l++)
     {
-        m_NodesInLayer.append(0);
+        m_NodesInLayer.push_back(0);
         for (int b = 0; b < m_borders[l].size(); b++)
         {
 
@@ -215,24 +220,41 @@ int Tree::getBranchNumberOfFirstChild(int layer, int branch)
 }
 
 
-bool Tree::readTreeStructureFromFile(QTextStream& stream)
+bool Tree::readTreeStructureFromFile(std::ifstream& stream)
 {
-    QString line = stream.readLine().trimmed();
-    QStringList splitList;
-    QStringList listHelp;
+    std::string line;
+    std::getline(stream, line);
+    line.erase(line.begin(), std::find_if(line.begin(), line.end(),
+        std::not1(std::ptr_fun<int, int>(std::isspace))));
+    //QString line = stream.readLine().trimmed();
+    std::vector<std::string> splitList;
+
     m_borders.clear();
 
     while (line.length() != 0)
-    {
+    { 
+    
+        std::string::size_type prev_pos = 0, pos = 0;
+        splitList.clear();
+        while ((pos = line.find(' ', pos)) != std::string::npos)
+        {
+            std::string substring(line.substr(prev_pos, pos - prev_pos));
 
+            splitList.push_back(substring);
 
-        splitList = line.split(" ");
-        QList<feature> list;
+            prev_pos = ++pos;
+        }
+        std::string lastword = line.substr(prev_pos, pos - prev_pos);
+        if (!lastword.empty())
+            splitList.push_back(lastword); // Last word
+
+        //splitList = line.split(" ");
+        std::vector<feature> list;
 
         div_t divresult = div(splitList.size(), 2);
         if (divresult.rem != 0)
         {
-            qDebug() << "line length not even";
+            std::cout << "line length not even";
             break;
         }
 
@@ -244,19 +266,22 @@ bool Tree::readTreeStructureFromFile(QTextStream& stream)
 
             if (splitList[2 * i].compare("NA") != 0)
             {
-                feature = (decisionTreeFeatures)splitList[2 * i].toInt();
-                thershold = splitList[2 * i + 1].toFloat();
+                feature = (decisionTreeFeatures)std::stoi(splitList[2 * i]);
+                thershold = std::stof(splitList[2 * i + 1]);
             }
 
 
-            list.append(qMakePair(feature, thershold));
+            list.push_back(std::make_pair(feature, thershold));
         }
 
-        m_borders.append(list);
-        line = stream.readLine().trimmed();
+        m_borders.push_back(list);
+        //line = stream.readLine().trimmed();
+        std::getline(stream, line);
+        line.erase(line.begin(), std::find_if(line.begin(), line.end(),
+            std::not1(std::ptr_fun<int, int>(std::isspace))));
     }
 
-    m_borders.removeLast(); // last line does not contain any information
+    m_borders.pop_back();// last line does not contain any information
     bool test = builtTree(m_borders);
     return test;
 }

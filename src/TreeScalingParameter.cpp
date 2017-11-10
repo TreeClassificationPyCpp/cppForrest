@@ -1,15 +1,10 @@
 #include "TreeScalingParameter.h"
 
-#ifndef Q_MOC_RUN
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/ini_parser.hpp>
-#include <boost/exception/all.hpp>
-#include <boost/lexical_cast.hpp>
-#endif
+#include <iostream>
+#include "INIReader.h"
+#include <experimental/filesystem>
 
-#include <QFile>
-
-TreeScalingParameter::TreeScalingParameter(QObject* parent)
+TreeScalingParameter::TreeScalingParameter()
     //: m_emgBiSensitivity(0.0)
 {
 
@@ -21,53 +16,49 @@ TreeScalingParameter::~TreeScalingParameter()
 }
 
 
-bool TreeScalingParameter::setIniFile(const QString& filePathAndName)
+bool TreeScalingParameter::setIniFile(const std::string& filePathAndName)
 {
-    if (!QFile::exists(filePathAndName))
+
+
+    if (!std::experimental::filesystem::exists(filePathAndName))
         return false;
 
-
-    boost::property_tree::ptree pt;
-    try
-    {
-        boost::property_tree::ini_parser::read_ini(filePathAndName.toStdString(), pt);
-    }
-    catch (const std::exception&)
-    {
+    INIReader reader(filePathAndName);
+    if (reader.ParseError() < 0) {
+        std::cout << "Can't load 'test.ini'\n";
         return false;
     }
 
 
-    int featureNumber = pt.get<int>("features.number");
+
+    int featureNumber = reader.GetInteger("features", "number", -1);
     m_min.resize(featureNumber);
     m_max.resize(featureNumber);
     m_range.resize(featureNumber);
 
 
-    QString help;
-    QString help2;
+    std::string help;
     for (int i = 0; i < featureNumber; ++i)
     {
-        help.setNum(i);
+        help = std::to_string(i);
+
         //help = "features." + help;
         //std::string str = help.toStdString();
         //std::string feature = pt.get<std::string>(str);
         //m_scalingParameter.featureOrder.append(QString::fromStdString(feature));
 
-        help2 = help + ".min";
-        m_min[i] = pt.get<float>(help2.toStdString());
+        m_min[i] = reader.GetReal(help, "min", -1); 
 
-        help2 = help + ".max";
-        m_max[i] = pt.get<float>(help2.toStdString());
 
-        help2 = help + ".range";
-        m_range[i] = pt.get<float>(help2.toStdString());
+        m_max[i] = reader.GetReal(help, "max", -1); 
+
+        m_range[i] = reader.GetReal(help, "range", -1);
     }
 
     return true;
 }
 
-bool TreeScalingParameter::scaleFeatures(QVector<double>& features)
+bool TreeScalingParameter::scaleFeatures(std::vector<double>& features)
 {
     if (features.size() != m_range.size())
         return false;

@@ -4,19 +4,18 @@
 #define NODE_H_
 
 
-
-#include <QObject>
-#include <QList>
-#include <QMap>
+#include <vector>
+#include <list>
+#include <map>
 #include "DecisionTree_global.h"
 
-class Node : public QObject
+class Node
 {
-    Q_OBJECT
+    
 
 public:
 
-    Node(Node* treeParent = nullptr, QObject* parent = 0);
+    Node(Node* treeParent = nullptr);
     ~Node();
 
 
@@ -49,12 +48,9 @@ public:
     *   layer - layer of last node in decion path
     *   branch - branch of last node in decion path
     */
-    void decide(QVector<double> values, int& result, int* layer = nullptr, int* branch=nullptr);
+    void decide(std::vector<double> values, int& result, int* layer = nullptr, int* branch=nullptr);
 
-
-
-    void decide(QVector<double>& values, float& result, int* layer = nullptr, int* branch = nullptr);
-
+    void decide(std::vector<double>& values, float& result, int* layer = nullptr, int* branch = nullptr);
 
     /*
     *   set feature and corresponding boreder to the node
@@ -73,13 +69,13 @@ public:
     int m_layer; // layer of the node (root is zero)
     int m_branch; // number of the nod in the layer, beginning on the left side starting with zero
     int m_branchNumberOfFirstChild; // holds the index of the first child node, is -1 if this node is a leaf#float 
-    QPair<float, float> m_leafPropability; // holds the propability of the leaf in reference to the trainignsdata
+    std::map<float, float> m_leafPropability; // holds the propability of the leaf in reference to the trainignsdata
     float m_returnValue;
     feature m_border; // holds the kind of feature and the border for the decision in this node
 
 private:
     Node* m_parent; // parent node of this node
-    QList<Node*> m_children; // list of children, always two
+    std::vector<Node*> m_children; // list of children, always two
 
 };
 

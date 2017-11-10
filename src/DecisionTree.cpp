@@ -2,38 +2,47 @@
 
 
 #include "DecisionTree.h"
-#include "UtilityFunctions.h"
+//#include "UtilityFunctions.h"
 #include "Node.h"
-#include <QDebug>
-#include <QTextStream>
-#include "QFile"
+#include <experimental/filesystem>
 
+#include <string>
+#include <iostream>
+#include <fstream>
   
-DecisionTree::DecisionTree(QObject* parent)
-    : QObject(parent)
-    , m_usePropability(false)
+#include <algorithm> 
+#include <functional> 
+#include <cctype>
+#include <locale>
+
+DecisionTree::DecisionTree()
+    : m_usePropability(false)
     , m_treeScalingParameter(nullptr)
 {
-    m_treeScalingParameter = new TreeScalingParameter(this);
+    m_treeScalingParameter = new TreeScalingParameter();
 }
 
 DecisionTree::~DecisionTree()
 {
-
+    if (m_treeScalingParameter != nullptr)
+    {
+        delete m_treeScalingParameter;
+        m_treeScalingParameter = nullptr;
+    }
 }
 
-bool DecisionTree::builtTree(QList<QList<feature>> borders)
+bool DecisionTree::builtTree(std::vector<std::vector<feature>> borders)
 {
     if (borders.size() == 0)
         return false;
 
-    m_treeList.append(new Tree(this));
+    m_treeList.push_back(new Tree());
     m_treeList.back()->setUseProbability(m_usePropability);
     return m_treeList.back()->builtTree(borders);
 }
 
 
-float DecisionTree::decide(QVector< double> features, int* layer, int* branch)
+float DecisionTree::decide(std::vector< double> features, int* layer, int* branch)
 {
     if (m_treeList.size() == 0)
         return -1;
@@ -82,33 +91,36 @@ float DecisionTree::decide(QVector< double> features, int* layer, int* branch)
 
 }
 
-bool DecisionTree::setupTreeClassifier(QString treeStructureFile)
+bool DecisionTree::setupTreeClassifier(std::string treeStructureFile)
 {
-    QFile file(treeStructureFile);
-    if (!file.exists())
+    if (!std::experimental::filesystem::exists(treeStructureFile))
         return false;
-
-    if (!file.open(QFile::ReadOnly))
-        return false;
-
-    QTextStream stream(&file);
-    int numOfTrees = stream.readLine().trimmed().toInt();
+    std::ifstream file;
+    file.open(treeStructureFile);
+    std::string line;
+    //QTextStream stream(&file);
+    std::getline(file, line);
+    line.erase(line.begin(), std::find_if(line.begin(), line.end(),
+        std::not1(std::ptr_fun<int, int>(std::isspace))));
+    int numOfTrees = std::stoi(line);
     if (numOfTrees == 0)
         return false;
 
-    m_treeList.reserve(numOfTrees);
-    QString line = stream.readLine(); // read the empty line after number of Trees
+    //m_treeList.resize(numOfTrees);
+    
+    std::getline(file, line);
+    //std::string line = (file.getline()); // stream.readLine(); // read the empty line after number of Trees
     if (line.length() != 0)
     {
-        qDebug() << "Parsing TreeStructure: Missing blank line";
+        std::cout << "Parsing TreeStructure: Missing blank line";
     }
 
 
     for (int i = 0; i < numOfTrees; i++)
     {
-		qDebug() << "TreeNumber: " << i;
-        m_treeList.append(new Tree(this));
-        if (!m_treeList.back()->readTreeStructureFromFile(stream))
+        std::cout << "TreeNumber: " << i;
+        m_treeList.push_back(new Tree());
+        if (!m_treeList.back()->readTreeStructureFromFile(file))
             return false;
     }
 
@@ -116,7 +128,7 @@ bool DecisionTree::setupTreeClassifier(QString treeStructureFile)
     return true;
 }
 
-bool DecisionTree::scaleFeatures(QVector<double>& features)
+bool DecisionTree::scaleFeatures(std::vector<double>& features)
 {
     if (!m_treeScalingParameter)
         false;

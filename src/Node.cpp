@@ -1,9 +1,7 @@
 #include "Node.h"
-#include <QDebug>
 
-Node::Node(Node* treeParent, QObject* parent)
-    : QObject(parent)
-    , m_border(nada, 0.0f)
+Node::Node(Node* treeParent)
+    : m_border(nada, 0.0f)
     , m_layer(0.0f)
     , m_branch(0.0f)
     , m_branchNumberOfFirstChild(0.0f)
@@ -23,11 +21,11 @@ bool Node::setChildren(Node* child)
     if (m_children.size() >= 2)
         return false;
 
-    m_children.append(child);
+    m_children.push_back(child);
     return true;
 }
 
-void Node::decide(QVector<double> values, int& result, int* layer, int* branch)
+void Node::decide(std::vector<double> values, int& result, int* layer, int* branch)
 {
 
     // if node is a leaf make decision and retunr it
@@ -61,7 +59,7 @@ void Node::decide(QVector<double> values, int& result, int* layer, int* branch)
     }
 }
 
-void Node::decide(QVector< double>& values, float& result, int* layer, int* branch)
+void Node::decide(std::vector< double>& values, float& result, int* layer, int* branch)
 {
 
 
@@ -79,6 +77,8 @@ void Node::decide(QVector< double>& values, float& result, int* layer, int* bran
 
         return;
     }
+    if ((int)m_border.first < 0 || (int)m_border.first >= values.size())
+        return;
 
     // get its feature - value
     float value = values.at((int)m_border.first);

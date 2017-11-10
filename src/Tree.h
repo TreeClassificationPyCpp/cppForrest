@@ -3,26 +3,25 @@
 #ifndef TREE_H
 #define TREE_H
 
-#include <QTextStream>
-#include <QObject>
-#include <QVector>
+#include <vector>
 #include "DecisionTree_global.h"
+#include <queue>
 class Node;
 
-class Tree: public QObject
+class Tree
 {
-    Q_OBJECT
+    
 
 public:
 
-    Tree(QObject* parent = 0);
+    Tree();
     ~Tree();
 
     /*
     *   build the decision tree as spezified in borders
     *   QList<QList<feature>> borders - holds all information for tree structure and features with corresponing borders
     */
-    bool builtTree(QList<QList<feature>> borders);
+    bool builtTree(std::vector<std::vector<feature> > borders);
 
     /*
     *   apply the decision tree to the feature set
@@ -30,23 +29,22 @@ public:
     *   int* layer - returns layer number of last node in decison path for testing
     *   int* branch - returns branch number of last node in decison path for testing
     */
-    float decide(QVector< double> features, int* layer = nullptr, int* branch = nullptr);
-
-
+    float decide(std::vector< double> features, int* layer = nullptr, int* branch = nullptr);
+    
 
     void setUseProbability(bool probs){ m_useProps = probs; }
 
 
-    bool readTreeStructureFromFile(QTextStream& stream);
+    bool readTreeStructureFromFile(std::ifstream& stream);
 
 
 private:
     Node* m_root; // root node of the tree held by this class
     int m_numberOfNodes; // number of nodes in the tree
     int m_nodesAdded;    // number of nodes added while setting up the tree
-    QList<int> m_NodesInLayer;
+    std::vector<int> m_NodesInLayer;
 
-    QList<QList<feature>> m_borders; // set of borders with complete infomation 
+    std::vector<std::vector<feature> > m_borders; // set of borders with complete infomation 
     //QList<QList<QPair<float, float>>> m_leafProps;
     bool m_useProps;
 

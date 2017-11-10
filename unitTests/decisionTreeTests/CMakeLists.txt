@@ -23,32 +23,9 @@ set(HEADER_FILES
 	)
 
 
-set(QT_MOC_HEADERS)
-foreach(headerFile ${HEADER_FILES} )
-
-        file(STRINGS ${headerFile} var REGEX "Q_OBJECT")
-
-        if(var)
-
-            list(APPEND QT_MOC_HEADERS ${headerFile})
-
-        endif()
-
-endforeach()
- 
 
 
-list(APPEND QT_MOC_SOURCES)
- 
 
-
-if (QT_MOC_HEADERS)
-
-    	qt5_wrap_cpp(QT_MOC_SOURCES ${QT_MOC_HEADERS})
-
-	source_group("Generated Files" FILES ${QT_MOC_SOURCES})
-
-endif()
 
    
 if (USE_PCH)
@@ -62,7 +39,6 @@ endif()
 add_executable(DecisionTreeTests 
 		${SOURCE_FILES}
 		${HEADER_FILES} 
-		${QT_MOC_SOURCES}
 	)
 
 
@@ -75,34 +51,31 @@ add_test(NAME DecisionTreeTests COMMAND DecisionTreeTests)
 
 include_directories(${BOOST_DIR})
 
-include_directories(${DecisionTreeLib_INCLUDE})
+include_directories(${CMAKE_SOURCE_DIR}/src)
 
 
 
 target_link_libraries(DecisionTreeTests   
-			Qt5::Core  gtest gmock_main
+		gtest gmock_main
 					 
                       )
 
 
-target_link_libraries(DecisionTreeTests   debug  ${DecisionTreeLib_DEBUG_LIBRARIES})
+target_link_libraries(DecisionTreeTests   debug  ${CMAKE_SOURCE_DIR}/lib/DecisionTree/Debug/DecisionTreed.lib)
 
-target_link_libraries(DecisionTreeTests   optimized   ${DecisionTreeLib_RELEASE_LIBRARIES})
+target_link_libraries(DecisionTreeTests   optimized    ${CMAKE_SOURCE_DIR}/lib/DecisionTree/Release/DecisionTree.lib)
 
 add_dependencies(DecisionTreeTests   DecisionTree gtest gmock_main)
 
 
 
 target_include_directories(DecisionTreeTests PUBLIC
-
-			${SwallowingLib_INCLUDE}
-                        ${Boost_INCLUDE_DIR}
-					${DecisionTreeLib_INCLUDE}
+					    ${CMAKE_SOURCE_DIR}/src
 				
 )
 
   
-target_compile_definitions(DecisionTreeTests PUBLIC BOOST_ALL_NO_LIB UNIT_TEST)
+target_compile_definitions(DecisionTreeTests PUBLIC UNIT_TEST)
 
 
 if(MSVC)
