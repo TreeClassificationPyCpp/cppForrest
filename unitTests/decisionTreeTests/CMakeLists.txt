@@ -69,10 +69,13 @@ target_link_libraries(DecisionTreeTests
 					 
                       )
 
-
+if (MSVC)
 target_link_libraries(DecisionTreeTests   debug  ${CMAKE_SOURCE_DIR}/lib/DecisionTree/Debug/DecisionTreed.lib)
-
 target_link_libraries(DecisionTreeTests   optimized    ${CMAKE_SOURCE_DIR}/lib/DecisionTree/Release/DecisionTree.lib)
+else(MSVC)
+target_link_libraries(DecisionTreeTests   debug  ${CMAKE_SOURCE_DIR}/lib/DecisionTree/libDecisionTreed.a)
+target_link_libraries(DecisionTreeTests   optimized    ${CMAKE_SOURCE_DIR}/lib/DecisionTree/libDecisionTree.a)
+endif(MSVC)
 
 add_dependencies(DecisionTreeTests   DecisionTree gtest gmock_main)
 
