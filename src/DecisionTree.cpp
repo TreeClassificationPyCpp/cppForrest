@@ -4,7 +4,6 @@
 #include "DecisionTree.h"
 //#include "UtilityFunctions.h"
 #include "Node.h"
-#include <experimental/filesystem>
 
 #include <string>
 #include <iostream>
@@ -93,10 +92,14 @@ float DecisionTree::decide(std::vector< double> features, int* layer, int* branc
 
 bool DecisionTree::setupTreeClassifier(std::string treeStructureFile)
 {
-    if (!std::experimental::filesystem::exists(treeStructureFile))
-        return false;
+
     std::ifstream file;
     file.open(treeStructureFile);
+    if ((file.rdstate() & std::ifstream::failbit) != 0)
+    {
+        std::cerr << "Error opening 'test.txt'\n";
+        return false;
+    }
     std::string line;
     //QTextStream stream(&file);
     std::getline(file, line);
@@ -112,7 +115,7 @@ bool DecisionTree::setupTreeClassifier(std::string treeStructureFile)
     //std::string line = (file.getline()); // stream.readLine(); // read the empty line after number of Trees
     if (line.length() != 0)
     {
-        std::cout << "Parsing TreeStructure: Missing blank line";
+        std::cerr << "Parsing TreeStructure: Missing blank line\n";
     }
 
 

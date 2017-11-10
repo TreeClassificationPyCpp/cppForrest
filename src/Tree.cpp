@@ -254,7 +254,7 @@ bool Tree::readTreeStructureFromFile(std::ifstream& stream)
         div_t divresult = div(splitList.size(), 2);
         if (divresult.rem != 0)
         {
-            std::cout << "line length not even";
+            std::cerr << "line length not even\n";
             break;
         }
 

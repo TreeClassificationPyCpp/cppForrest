@@ -2,7 +2,6 @@
 
 #include <iostream>
 #include "INIReader.h"
-#include <experimental/filesystem>
 
 TreeScalingParameter::TreeScalingParameter()
     //: m_emgBiSensitivity(0.0)
@@ -20,12 +19,9 @@ bool TreeScalingParameter::setIniFile(const std::string& filePathAndName)
 {
 
 
-    if (!std::experimental::filesystem::exists(filePathAndName))
-        return false;
-
     INIReader reader(filePathAndName);
     if (reader.ParseError() < 0) {
-        std::cout << "Can't load 'test.ini'\n";
+        std::cerr << "Can't load 'test.ini'\n";
         return false;
     }
 
