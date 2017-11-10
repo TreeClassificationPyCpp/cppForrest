@@ -97,7 +97,17 @@ if(MSVC)
 endif()
 
 
+add_custom_target(CopyTestData
 
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different  ${CMAKE_SOURCE_DIR}/unitTests/decisionTreeTests/treeClassifier_tree.txt  ${CMAKE_BINARY_DIR}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different  ${CMAKE_SOURCE_DIR}/unitTests/decisionTreeTests/treeClassifier_forrest.txt  ${CMAKE_BINARY_DIR}
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different  ${CMAKE_SOURCE_DIR}/unitTests/decisionTreeTests/test_tree.txt  ${CMAKE_BINARY_DIR}
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different  ${CMAKE_SOURCE_DIR}/unitTests/decisionTreeTests/test_forrest.txt  ${CMAKE_BINARY_DIR}
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different  ${CMAKE_SOURCE_DIR}/unitTests/decisionTreeTests/data_tree.txt  ${CMAKE_BINARY_DIR}
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different  ${CMAKE_SOURCE_DIR}/unitTests/decisionTreeTests/data_forrest.txt  ${CMAKE_BINARY_DIR}
+
+           )
+   add_dependencies(DecisionTreeTests CopyTestData)
 
 
 
