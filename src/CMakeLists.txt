@@ -13,8 +13,8 @@ set(SOURCE_FILES
 	Node.cpp
 	Tree.cpp
 	TreeScalingParameter.cpp
-	INIReader.cpp
-	ini.c
+	${CMAKE_CURRENT_SOURCE_DIR}/external/inih/cpp/INIReader.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/external/inih/ini.c
 	)
 
 set(HEADER_FILES
@@ -23,8 +23,8 @@ set(HEADER_FILES
 	Node.h
 	Tree.h
 	TreeScalingParameter.h
-	INIReader.h
-	ini.h
+	${CMAKE_CURRENT_SOURCE_DIR}/external/inih/cpp/INIReader.h
+	${CMAKE_CURRENT_SOURCE_DIR}/external/inih/ini.h
 	)
 
 
@@ -37,6 +37,7 @@ target_link_libraries(DecisionTree  )
 					   
 target_include_directories(DecisionTree PUBLIC
                             ${CMAKE_CURRENT_SOURCE_DIR}/src
+							${CMAKE_CURRENT_SOURCE_DIR}/external/inih
                             ${CMAKE_CURRENT_SOURCE_DIR}
 							${CMAKE_CURRENT_BINARY_DIR}
 )
