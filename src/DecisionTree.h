@@ -5,6 +5,8 @@
 
 
 #include <list>
+#include <string>
+#include <vector>
 #include "DecisionTree_global.h"
 #include "Tree.h"
 #include "TreeScalingParameter.h"
@@ -24,7 +26,7 @@ public:
     *   build the decision tree as spezified in borders
     *   QList<QList<feature>> borders - holds all information for tree structure and features with corresponing borders
     */
-    bool builtTree(std::vector<std::vector<feature>> borders);
+    bool builtTree(std::vector<std::vector<feature> > borders);
 
 
     /*

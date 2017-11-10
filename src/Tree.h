@@ -6,6 +6,7 @@
 #include <vector>
 #include "DecisionTree_global.h"
 #include <queue>
+#include <iostream>
 class Node;
 
 class Tree
